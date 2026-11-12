@@ -253,7 +253,6 @@ body.dragging,body.dragging *{cursor:grabbing !important}
     <button class="btn" id="undo" disabled title="Annuler (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Annuler</button>
     <button class="btn" id="export" title="Télécharger une sauvegarde JSON"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Exporter</button>
     <button class="btn" id="import" title="Charger une sauvegarde JSON"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>Importer</button>
-    <button class="btn" id="reset" title="Remettre la répartition de départ (pour tout le monde)">Réinitialiser</button>
     <input type="file" id="file" accept="application/json,.json" hidden>
   </div>
 </header>
@@ -840,7 +839,7 @@ let toastT = 0;
 function toast(msg, canUndo = true){ $('tmsg').textContent = msg; $('tundo').hidden = !canUndo; $('toast').classList.add('on'); clearTimeout(toastT); toastT = setTimeout(hideToast, 4200); }
 function hideToast(){ $('toast').classList.remove('on'); }
 
-/* ---------- export / import / reset ---------- */
+/* ---------- export / import ---------- */
 $('export').onclick = () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
@@ -854,10 +853,6 @@ $('file').onchange = async e => {
     if (sb && !confirm('Importer remplace la répartition pour tout le monde. Continuer ?')) return;
     commit(() => { state = s; }, 'Sauvegarde importée'); }
   catch (err) { toast("Ce fichier n'est pas une sauvegarde valide", false); }
-};
-$('reset').onclick = () => {
-  if (sb && !confirm('Remettre la répartition de départ pour tout le monde ? (« Annuler » reste possible juste après.)')) return;
-  commit(() => { state = defaults(); }, 'Répartition de départ remise');
 };
 
 /* ---------- keyboard ---------- */
