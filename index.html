@@ -407,7 +407,7 @@ let focusPid = null;
 const hist = [];
 
 function sortProjects(list = state.projects){
-  for (const p of list) p.members.sort((a, b) => a.o - b.o);
+  for (const p of list) p.members.sort((a, b) => a.o - b.o || (a.p < b.p ? -1 : a.p > b.p ? 1 : 0));
   return list.sort((a, b) => a.o - b.o || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 const clone = x => JSON.parse(JSON.stringify(x));
@@ -494,9 +494,12 @@ function tip(pid){
 }
 
 /* ---------- mutations ---------- */
+// Ordre d'arrivée dans un projet : un numéro unique par ajout, même pour plusieurs ajouts dans la même milliseconde.
+let lastO = 0;
+const nextO = () => (lastO = Math.max(Date.now(), lastO + 1));
 function place(p, pid, role, pole){
   let m = p.members.find(x => x.p === pid);
-  if (!m) { m = {p:pid, r:role, o:Date.now()}; p.members.push(m); }
+  if (!m) { m = {p:pid, r:role, o:nextO()}; p.members.push(m); }
   m.r = role;
   if (role === 'del' && !m.pole) m.pole = pole || defPole(pid);
 }
